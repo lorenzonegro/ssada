@@ -7,3 +7,4 @@ head(gps)
 str(gps)
 hist(gps$Rating,xlim=c(0,5),nclass=100)
 mean(gps$Rating)
+#ciao
