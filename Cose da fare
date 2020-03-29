@@ -1,0 +1,29 @@
+0 - eliminare osservazione 10473
+1 - eliminare le ripetizioni:
+      > mediana Reviews
+      > moda Category
+2 - Size:
+      > una variabile: varia o non varia
+      > una variabile numerica: se non varia valore, altrimenti NA
+3 - Type:
+      > codificare solo Free e Paid
+4 - Installs:
+      > ricodificare le variabili come [min, max)
+      > accopare quelle da 0 a 1000
+5 - Price
+      > continua
+6 - Type_Price: collassare Type e Price 
+      > Free, Paid, Plus
+7 - Content.Rating
+      > le due Unrated classificarle a mano
+8 - Genres
+      > tenere solo la seconda parola
+9 - Last.Updates
+      > trasformarla in data
+10 -  Android.Ver
+      > eliminare osservazioni che non prevedono "and up"
+      > accorpare i fattori in modo da avere "x.0 and up"
+      
+      Varies with device (interpretazione): gli sviluppatori hanno deciso di 
+      aggiornare l'app solo per i telefoni che riescono a sopportare l'aggiornamento 
+      in questo modo non perdono i clienti con device obsoleti.
