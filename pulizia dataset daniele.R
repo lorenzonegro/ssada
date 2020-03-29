@@ -51,8 +51,3 @@ google_app <- rbind(gps_fin,gps_all_fin,control_fin)
 rownames(google_app) <- NULL
 google_app$Reviews <- as.integer(google_app$Reviews)
 write.csv(google_app, file = "google_app.csv", row.names = FALSE)
-
-google_app <- read.csv("google_app.csv")
-
-levels(google_app$Installs)
-
