@@ -1,6 +1,8 @@
 gps <- read.csv("googleplaystore.csv")
+# elimino la riga 10473
 gps <- gps[-10473,]
 
+# controllo i doppioni
 app_name <- unique(gps$App)
 table_app <- as.data.frame(table(gps$App))
 app_one <- as.character(table_app$Var1[table_app$Freq==1])
@@ -32,17 +34,25 @@ for(i in 1:length(app_multi)){
   cat("\n")
 }
 
+# sono quelle che non erano doppioni in gps
 gps_fin <- gps[gps$App%in%app_one,]
 
+# dentro gps_all ci sono ancora doppioni 
+#(l'ho fatto a posta perchè non sapevo come sistemarli in automatico, quindi lo faccio a mano)
 table_app2 <- as.data.frame(table(as.character(gps_all$App)))
 gps_all_fin <- gps_all[gps_all$App%in%table_app2$Var1[table_app2$Freq==1],]
 
 control <- gps_all[gps_all$App%in%table_app2$Var1[table_app2$Freq>1],]
-control_fin <- control[c(3,6,7,10,11,14,16,18,19,22,24,26,28,30),]
+rownames(control) <- NULL
+control_fin <- control[c(1,3,6,7,10,11,14,16,18,19,22,24,26,28,30),]
 
+# sistemo il dataset finale
 google_app <- rbind(gps_fin,gps_all_fin,control_fin)
 rownames(google_app) <- NULL
 google_app$Reviews <- as.integer(google_app$Reviews)
 write.csv(google_app, file = "google_app.csv", row.names = FALSE)
 
+google_app <- read.csv("google_app.csv")
+
+levels(google_app$Installs)
 
