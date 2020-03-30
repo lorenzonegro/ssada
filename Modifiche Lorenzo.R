@@ -17,6 +17,9 @@ which(gps$Type=="0")
 table(gps$Price)
 gps$Price=gsub( "\\$","",gps$Price)
 table(gps$Price)
+gps$Price=as.numeric(gps$Price)
+boxplot(gps$Price[gps$Price!=0])
+hist(gps$Price[gps$Price!=0],xlim=c(0.00,100),nclass=1000)
 
 #Variabile 8
 str(gps$Genres) #120 Livelli
