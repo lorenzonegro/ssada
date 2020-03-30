@@ -21,6 +21,26 @@ gps$Price=as.numeric(gps$Price)
 boxplot(gps$Price[gps$Price!=0])
 hist(gps$Price[gps$Price!=0],xlim=c(0.00,100),nclass=1000)
 
+Type_Price=rep(NA,length(gps$Price))
+for(i in (1:length(gps$Price)))
+{
+  if(gps$Price[i]==0)
+  {
+    Type_Price[i]="Free"
+  }
+  else if(gps$Price[i]<5)
+  {
+    Type_Price[i]="Paid"
+  }
+  else if(gps$Price[i]>=5)
+  {
+    Type_Price[i]="Plus"
+  }
+}
+Type_Price=as.factor(Type_Price)
+gps=cbind(gps,Type_Price)
+
+
 #Variabile 8
 str(gps$Genres) #120 Livelli
 table(gps$Genres)
