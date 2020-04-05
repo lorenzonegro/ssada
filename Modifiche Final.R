@@ -219,4 +219,5 @@ google_app$Category <- revalue(google_app$Category,c("Art_and_design"="Art & Des
 
 table(google_app$Category)
 length(which(google_app$Category==google_app$Genres))
+google_app$Category=as.factor(google_app$Category)
 save(google_app,file="google_app_final.RData")
