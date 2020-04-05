@@ -190,4 +190,33 @@ Sys.setlocale("LC_ALL","C") #devo cambiare formato in cui vengono letti i mesi i
 google_app$Last.Updated=as.Date(as.character(google_app$Last.Updated),format='%B %d, %Y')
 google_app$Last.Updated
 
-write.csv(google_app,"google_app_final.csv",row.names=F)
+#Ricodifico category come genre
+table(google_app$Category)
+#tutte lower
+google_app$Category=tolower(google_app$Category)
+table(google_app$Category)
+#alzo la prima lettera
+firstup <- function(x) {
+  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+  x
+}
+
+google_app$Category=firstup(google_app$Category)
+table(google_app$Category)
+
+library(plyr)
+google_app$Category <- revalue(google_app$Category,c("Art_and_design"="Art & Design",
+                                                     "Auto_and_vehicles"="Auto & Vehicles",
+                                                     "Books_and_reference"="Books & Reference",
+                                                     "Food_and_drink"="Food & Drink",
+                                                     "Health_and_fitness"="Health & Fitness",
+                                                     "House_and_home"="House & Home",
+                                                     "Libraries_and_demo"="Libraries & Demo",
+                                                     "Maps_and_navigation"="Maps & Navigation",
+                                                     "News_and_magazines"="News & Magazines",
+                                                     "Travel_and_local"="Travel & Local",
+                                                     "Video_players"="Video Players"))
+
+table(google_app$Category)
+length(which(google_app$Category==google_app$Genres))
+save(google_app,file="google_app_final.RData")
