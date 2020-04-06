@@ -38,7 +38,7 @@ reco_factor <- function(x){
   }
 }
 instal_corr <- as.character(sapply(inst,reco_factor))
-google_app$Installs <- factor(instal_corr, lev)
+google_app$Installs <- factor(instal_corr, lev, ordered = T)
 
 # Modifica 2
 # creo la nuova variabile
@@ -47,7 +47,7 @@ summary(Size_Varies)
 
 # ricodifico quelle che non variano
 table(google_app$Size)
-# Dato che un Mb è mille Kb
+# Dato che un Mb ? mille Kb
 # Mb
 # Tengo memoria dei Mb
 lunghezze <- nchar(as.character(google_app$Size))
@@ -71,7 +71,7 @@ table(google_app$Price)
 hist(google_app$Price)
 summary(google_app$Price)
 
-# c'è charamente un outlier
+# c'? charamente un outlier
 
 
 # Modifica 7
@@ -116,7 +116,7 @@ table(google_app$Android.Ver)
 google_app$Android.Ver <- factor(google_app$Android.Ver)
 # elimino gli Nan 
 google_app <- google_app[-which(google_app$Android.Ver=="NaN"),]
-# ho dovuto fare così perché NaN era una modalità non il classico NaN
+# ho dovuto fare cos? perch? NaN era una modalit? non il classico NaN
 google_app$Android.Ver <- factor(google_app$Android.Ver)
 table(google_app$Android.Ver)
 
@@ -220,4 +220,5 @@ google_app$Category <- revalue(google_app$Category,c("Art_and_design"="Art & Des
 table(google_app$Category)
 length(which(google_app$Category==google_app$Genres))
 google_app$Category=as.factor(google_app$Category)
+google_app$App=factor(google_app$App)
 save(google_app,file="google_app_final.RData")
