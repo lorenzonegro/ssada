@@ -25,4 +25,4 @@ pie(as.numeric(top21),nomi21)
 pie(as.numeric(top21),nomi21, col=hcl.colors(10,"Greens"),clockwise=T,
     main="FlowingData Pool",lty=0, cex=0.7)
 
-
+length(which(google_app$Category==google_app$Genres))
