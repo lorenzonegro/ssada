@@ -7,32 +7,37 @@ table(google_app$Installs)
 
 
 # Type_Price
-ggplot(google_app[google_app$Type_Price=="Free",]) + 
+g <- ggplot(google_app[google_app$Type_Price=="Free",]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
-ggplot(google_app[google_app$Type_Price=="Paid",]) + 
+g1 <- ggplot(google_app[google_app$Type_Price=="Paid",]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
 ggplot(google_app[google_app$Type_Price=="Plus",]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
+
+library(grid)
+library(gridExtra)
+
+plot(arrangeGrob(g,g1))
 
 ggplot(google_app) + 
   geom_bar(aes(y=Installs, fill=Type_Price), position=position_dodge2(width = 0.9, preserve = "single"))+
   facet_grid(rows=Type_Price)
 
 ggplot(google_app) + 
-  geom_bar(aes(x=Type_Price, fill=Installs), position=position_dodge2(width = 0.9, preserve = "single"))
+  geom_bar(aes(x=Type_Price,y = (..count..)/sum(..count..), fill=Installs), position=position_dodge2(width = 0.9, preserve = "single"))
 
 
 #Size
-ggplot(google_app) + geom_boxplot(aes(x=Size, y=Installs, fill=Installs))+
+ggplot(google_app) + geom_boxplot(aes(y=Size, x=Installs, fill=Installs))+
   theme(legend.position = "none")
 sum(is.na(google_app$Size))
 #ATTENZIONE CI SONO NA!!!! eliminiamo le righe??
 
 #Price
 prova <- which(google_app$Price>0)
-ggplot(google_app[prova,]) + geom_boxplot(aes(x=Price, y=Installs, fill=Installs))
+ggplot(google_app[prova,]) + geom_boxplot(aes(y=Price, x=Installs, fill=Installs)) +coord_cartesian(ylim = c(0,20))
 
-ggplot(google_app) + geom_bar(aes(x=year(Last.Updated), fill=Installs), position="dodge")
+ggplot(google_app) + geom_bar(aes(x=Installs,fill=as.character(year(Last.Updated))), position="dodge")
 
 
 
