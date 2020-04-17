@@ -1,30 +1,30 @@
 library(ggplot2)
 library(lubridate)
+library(grid)
+library(gridExtra)
+library(scales)
+
 load("google_app_final.RData")
 countInst <- as.data.frame(table(google_app$Installs))
 ggplot(google_app) + geom_bar(aes(y=Installs))
-table(google_app$Installs)
 
 
 # Type_Price
-g <- ggplot(google_app[google_app$Type_Price=="Free",]) + 
-  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
-g1 <- ggplot(google_app[google_app$Type_Price=="Paid",]) + 
-  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
-ggplot(google_app[google_app$Type_Price=="Plus",]) + 
-  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
+ty_free <- ggplot(google_app[google_app$Type_Price=="Free",]) + 
+  geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
+  geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + ggtitle("Gratis")+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
 
-library(grid)
-library(gridExtra)
+ty_paid <- ggplot(google_app[google_app$Type_Price%in% c("Paid","Plus"),]) + 
+  geom_bar(aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#ff6b30")+
+  scale_y_continuous(breaks = c(0,0.15,0.30))+
+  scale_x_discrete(limit = countInst$Var1) + ggtitle("A pagamento")+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))+
+  geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
 
-plot(arrangeGrob(g,g1))
-
-ggplot(google_app) + 
-  geom_bar(aes(y=Installs, fill=Type_Price), position=position_dodge2(width = 0.9, preserve = "single"))+
-  facet_grid(rows=Type_Price)
-
-ggplot(google_app) + 
-  geom_bar(aes(x=Type_Price,y = (..count..)/sum(..count..), fill=Installs), position=position_dodge2(width = 0.9, preserve = "single"))
+grid.arrange(ty_free,ty_paid, 
+             top = "Confronto del numero di installazioni per la tipologia di prezzo", 
+             left = textGrob("Frequenze",rot = 90, vjust = 0.5, hjust = 0.5))
 
 
 #Size
