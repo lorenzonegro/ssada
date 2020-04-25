@@ -13,7 +13,7 @@ table(google_app$Category)
 
 table(google_app$Category[google_app$Installs>="[50.000.000, 100.000.000)"])
 
-#Generi più presenti
+#Generi pi? presenti
 top20=sort(table(google_app$Category),decreasing = T)[1:20]
 nomi21=c(names(top20),"Others")
 others.dim=dim(google_app)[1]-sum(as.numeric(top20))
@@ -25,7 +25,7 @@ pie(as.numeric(top21),nomi21)
 pie(as.numeric(top21),nomi21, col=hcl.colors(10,"Greens"),clockwise=T,
     main="FlowingData Pool",lty=0, cex=0.7)
 
-#Implemento ciò che ha scritto Dani con le mie variabili
+#Implemento ciÃ² che ha scritto Dani con le mie variabili
 
 library(ggplot2)
 library(lubridate)
@@ -38,12 +38,68 @@ ggplot(google_app[google_app$Reviews<=mu.rev,]) +
 ggplot(google_app[google_app$Reviews>mu.rev,]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
 
+#Reviews confronto con installs
+rev_down <- ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
+  geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
+  geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + ggtitle("Meno recensite")+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
+
+rev_up <- ggplot(google_app[google_app$Reviews>mu.rev,]) + 
+  geom_bar(aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#ff6b30")+
+  scale_y_continuous(breaks = c(0,0.15,0.30))+
+  scale_x_discrete(limit = countInst$Var1) + ggtitle("Molto recensite")+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))+
+  geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
+
+grid.arrange(rev_down,rev_up, 
+             top = "Confronto del numero di installazioni per app molto recensite o meno", 
+             left = textGrob("Frequenze",rot = 90, vjust = 0.5, hjust = 0.5))
+
+
 #Per categoria e genere dobbiamo capire quali e in che modo indagare. MACRO CATEGORIE?
 
 #Android ver
 #Modifica confrontando relative device fissi e device variati
+#creo una nuova variabile che mi indica se la versione android cambia o meno
+varies_with_device=rep(NA,length(google_app$Android.Ver))
+for(i in (1:length(google_app$Android.Ver)))
+{
+  if(google_app$Android.Ver[i]=="Varies with device")
+  {
+    varies_with_device[i]="Yes"
+  }
+  else
+  {
+    varies_with_device[i]="No"
+  }
+}
+table(varies_with_device)
+table(google_app$Android.Ver)
+google_app=cbind(google_app,varies_with_device)
+google_app$varies_with_device=as.factor(google_app$varies_with_device) #2 livelli
+str(google_app$varies_with_device)
 
-ggplot(google_app) + geom_bar(aes(x=Android.Ver, fill=Installs), position="dodge")
+ggplot(google_app) + geom_bar(aes(x=varies_with_device, fill=Installs), position="dodge")
+
+#devo standardizzare all'interno delle due classi
+non_varia<- ggplot(google_app[google_app$varies_with_device=="No",]) + 
+  geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
+  geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + ggtitle("Non varia con device")+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
+
+varia <- ggplot(google_app[google_app$varies_with_device=="Yes",]) + 
+  geom_bar(aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#ff6b30")+
+  scale_y_continuous(breaks = c(0,0.15,0.30))+
+  scale_x_discrete(limit = countInst$Var1) + ggtitle("Varia con device")+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))+
+  geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
+
+grid.arrange(non_varia,varia, 
+             top = "Confronto del numero di installazioni in base al variare o meno per device", 
+             left = textGrob("Frequenze",rot = 90, vjust = 0.5, hjust = 0.5))
+
+
+
 #Content rating
 ggplot(google_app) + geom_bar(aes(x=Content.Rating, fill=Installs), position="dodge")
 
