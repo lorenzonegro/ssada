@@ -9,7 +9,7 @@ countInst <- as.data.frame(table(google_app$Installs))
 ggplot(google_app) + geom_bar(aes(y=Installs))
 
 
-# Type_Price
+#### Type_Price #### 
 ty_free <- ggplot(google_app[google_app$Type_Price=="Free",]) + 
   geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
   geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + ggtitle("Gratis")+
@@ -52,7 +52,7 @@ google_app[google_app$Price>100,]
 ggplot(google_app) + geom_density(aes(col=Installs,x=as.character(year(Last.Updated))), position="dodge")
 
 
-# Last update
+#### Last update #### 
 ty_2018 <- ggplot(google_app[year(google_app$Last.Updated)>=2018,]) + 
   geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
   geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + 
