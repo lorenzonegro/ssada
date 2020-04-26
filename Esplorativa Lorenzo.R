@@ -1,3 +1,4 @@
+rm(list=ls())
 load("google_app_final.RData")
 #Esplorativa
 #Category
@@ -7,7 +8,7 @@ load("google_app_final.RData")
 #Review
 
 str(google_app$Installs)
-hist(google_app$Reviews,nclass=100)
+hist(google_app$Reviews,nclass=20)
 table(google_app$Installs)
 table(google_app$Category)
 
@@ -26,7 +27,7 @@ pie(as.numeric(top21),nomi21, col=hcl.colors(10,"Greens"),clockwise=T,
     main="FlowingData Pool",lty=0, cex=0.7)
 
 #Implemento ciò che ha scritto Dani con le mie variabili
-
+library(grid)
 library(ggplot2)
 library(lubridate)
 countInst <- as.data.frame(table(google_app$Installs))
@@ -57,27 +58,6 @@ grid.arrange(rev_down,rev_up,
 
 
 #Per categoria e genere dobbiamo capire quali e in che modo indagare. MACRO CATEGORIE?
-
-#Android ver
-#Modifica confrontando relative device fissi e device variati
-#creo una nuova variabile che mi indica se la versione android cambia o meno
-varies_with_device=rep(NA,length(google_app$Android.Ver))
-for(i in (1:length(google_app$Android.Ver)))
-{
-  if(google_app$Android.Ver[i]=="Varies with device")
-  {
-    varies_with_device[i]="Yes"
-  }
-  else
-  {
-    varies_with_device[i]="No"
-  }
-}
-table(varies_with_device)
-table(google_app$Android.Ver)
-google_app=cbind(google_app,varies_with_device)
-google_app$varies_with_device=as.factor(google_app$varies_with_device) #2 livelli
-str(google_app$varies_with_device)
 
 ggplot(google_app) + geom_bar(aes(x=varies_with_device, fill=Installs), position="dodge")
 

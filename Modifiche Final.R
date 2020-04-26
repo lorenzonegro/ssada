@@ -225,4 +225,30 @@ table(google_app$Category)
 length(which(google_app$Category==google_app$Genres))
 google_app$Category=as.factor(google_app$Category)
 google_app$App=factor(google_app$App)
+
+#Android ver
+#Modifica confrontando relative device fissi e device variati
+#creo una nuova variabile che mi indica se la versione android cambia o meno
+varies_with_device=rep(NA,length(google_app$Android.Ver))
+for(i in (1:length(google_app$Android.Ver)))
+{
+  if(google_app$Android.Ver[i]=="Varies with device")
+  {
+    varies_with_device[i]="Yes"
+  }
+  else
+  {
+    varies_with_device[i]="No"
+  }
+}
+table(varies_with_device)
+table(google_app$Android.Ver)
+google_app=cbind(google_app,varies_with_device)
+google_app$varies_with_device=as.factor(google_app$varies_with_device) #2 livelli
+str(google_app$varies_with_device)
+
+google_app$Content.Rating=revalue(google_app$Content.Rating,c("Adults only 18+"="Adults",
+                                                              "Mature 17+"="Adults",
+                                                              "Everyone 10+"="Teen"))
+table(google_app$Content.Rating)
 save(google_app,file="google_app_final.RData")
