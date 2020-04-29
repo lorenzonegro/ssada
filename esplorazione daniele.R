@@ -40,6 +40,7 @@ ggplot(google_app) + geom_boxplot(aes(y=Size, x=Installs, fill=Installs))+
 sum(is.na(google_app$Size))
 table(google_app$Installs[is.na(google_app$Size)])
 #ATTENZIONE CI SONO NA!!!! eliminiamo le righe??
+sum(google_app$Size==0, na.rm = T)
 
 #Price
 prova <- which(google_app$Price>0 & google_app$Price<100)
@@ -82,10 +83,17 @@ grid.arrange(ty_2018,ty_20xx,
 
 
 # Rat
-ggplot(google_app) + geom_boxplot(aes(y=Rating, x=Installs, fill=Installs))
+ggplot(google_app) + geom_boxplot(aes(y=Reviews*Rating, x=Installs, fill=Installs))
 ggplot(google_app) + geom_violin(aes(y=Rating, x=Installs, fill=Installs))
 
-
+ggplot(google_app[!is.na(google_app$Rating),]) + geom_histogram(aes(x=(Reviews*Rating)/(mean(Rating, na.rm = T)*sum(Reviews))))
 ggplot(google_app) + geom_density(aes(x=Rating, col=Installs))
+
+
+new_x <- (google_app[!is.na(google_app$Rating),]$Reviews*google_app[!is.na(google_app$Rating),]$Rating)/
+  max((google_app[!is.na(google_app$Rating),]$Reviews*google_app[!is.na(google_app$Rating),]$Rating))
+summary(new_x)
+
+ggplot(google_app[!is.na(google_app$Rating),]) + geom_density(aes(x=new_x, col=Installs))
 
 ggplot(google_app[prova,]) + geom_point(aes(y=Price, x=Size, col= Installs)) + coord_cartesian(ylim = c(0,50))
