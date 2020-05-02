@@ -27,7 +27,7 @@ for(i in 1:length(app_multi)){
     tab <- as.data.frame(table(dat$Category))
     tab <- tab[order(tab$Freq, decreasing =T),] 
     gps_par$Category <- tab$Var1[1]
-    gps_par$Reviews <- median(as.numeric(dat$Reviews))
+    gps_par$Reviews <- median(as.numeric(as.character(dat$Reviews)))
   }
   gps_all <- rbind(gps_all, gps_par)
   cat(i)
