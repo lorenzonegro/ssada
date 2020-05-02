@@ -49,5 +49,6 @@ control_fin <- control[c(1,3,6,7,10,11,14,16,18,19,22,24,26,28,30),]
 # sistemo il dataset finale
 google_app <- rbind(gps_fin,gps_all_fin,control_fin)
 rownames(google_app) <- NULL
-google_app$Reviews <- as.integer(google_app$Reviews)
+google_app$Reviews <- as.numeric(as.character(google_app$Reviews))
+save(google_app, file="dataset_pulizia.RData")
 write.csv(google_app, file = "google_app.csv", row.names = FALSE)
