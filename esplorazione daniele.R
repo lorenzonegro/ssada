@@ -83,7 +83,7 @@ grid.arrange(ty_2018,ty_20xx,
 
 
 # Rat
-ggplot(google_app) + geom_boxplot(aes(y=Reviews*Rating, x=Installs, fill=Installs))
+ggplot(google_app) + geom_boxplot(aes(y=Rating, x=Installs, fill=Installs))
 ggplot(google_app) + geom_violin(aes(y=Rating, x=Installs, fill=Installs))
 
 ggplot(google_app[!is.na(google_app$Rating),]) + geom_histogram(aes(x=(Reviews*Rating)/(mean(Rating, na.rm = T)*sum(Reviews))))
