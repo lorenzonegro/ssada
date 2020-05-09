@@ -155,7 +155,7 @@ mod4 <- c("4.0 and up","4.0.3 and up","4.1 and up",
           "4.2 and up","4.3 and up","4.4 and up",
           "4.4W and up")
 mod5<- c("5.0 and up","5.1 and up")
-mod7 <- c("7.0 and up","7.1 and up")
+mod7 <- c("7.0 and up","7.1 and up", "8.0 and up")
 old_mod <- list(mod1=mod1, mod2=mod2,mod3=mod3,mod4=mod4,mod5=mod5,mod7=mod7)
 old_mod[2]
 # Considerazione: Ha senso tenere le app tanto nuove?
@@ -400,5 +400,6 @@ google_app$Installs_6c <- revalue(google_app$Installs_6c,c("[0, 1K)"="[0, 5K)",
 table(google_app$Installs_6c)
 
 google_app$Type <-  factor(google_app$Type)
+table(google_app$Android.Ver)
 save(google_app,file="google_app_final.RData")
 
