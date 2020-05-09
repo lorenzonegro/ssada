@@ -366,5 +366,6 @@ google_app$reviews.rate <- reviews.rate
 str(google_app)
 
 google_app <- google_app[,-1]
+google_app <- google_app[,-11]
 save(google_app,file="google_app_final.RData")
 
