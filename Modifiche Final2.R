@@ -333,7 +333,7 @@ max.rev <- c(10^3,5*10^3,10^4,5*10^4,10^5,5*10^5,10^6,5*10^6,10^7,5*10^7,10^8,5*
 n.rev <- rep(NA,length(google_app$Reviews))
 install.levels <- levels(google_app$Installs)
 
-# mi creo la "numerosità campionaria" di ogni osservazione
+# mi creo la "numerosit? campionaria" di ogni osservazione
 for(i in 1:13)
 {
   n.rev[google_app$Installs==install.levels[i]] <- max.rev[i]
@@ -341,7 +341,7 @@ for(i in 1:13)
 
 # ora devo scrivere la log-verosimiglianza
 # marginale per stimare i parametri della priori (una beta)
-# La marginale è una beta-binomiale
+# La marginale ? una beta-binomiale
 dati=as.matrix(cbind(n.rev,google_app$Reviews))
 logL <- function(param,dat=dati)
 {
@@ -358,12 +358,13 @@ par(mfrow = c(2,1))
 boxplot(reviews.rate~google_app$Installs)
 boxplot(google_app$Reviews/n.rev~google_app$Installs)
 # dai boxplot si vede un po' di shrinkage per quelle con pochi download
-# Controllo un po' più nel dettaglio
+# Controllo un po' pi? nel dettaglio
 head(reviews.rate[google_app$Installs==levels(google_app$Installs)[1]])
 head((google_app$Reviews/n.rev)[google_app$Installs==levels(google_app$Installs)[1]])
 
 google_app$reviews.rate <- reviews.rate
 str(google_app)
 
+google_app <- google_app[,-1]
 save(google_app,file="google_app_final.RData")
 
