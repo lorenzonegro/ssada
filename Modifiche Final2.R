@@ -367,5 +367,36 @@ str(google_app)
 
 google_app <- google_app[,-1]
 google_app <- google_app[,-11]
+google_app$Installs_4c <- google_app$Installs
+google_app$Installs_4c <- revalue(google_app$Installs_4c,c("[0, 1K)"="[0, 10K)",
+                                                           "[1K, 5K)"="[0, 10K)",
+                                                           "[5K, 10K)"="[0, 10K)",
+                                                           "[10K, 50K)"="[10k, 1M)",  
+                                                           "[50K, 100K)"="[10k, 1M)", 
+                                                           "[100K, 500K)"="[10k, 1M)",
+                                                           "[500K, 1M)"="[10k, 1M)",
+                                                           "[1M, 5M)"="[1M, 10M)", 
+                                                           "[5M, 10M)"="[1M, 10M)",
+                                                           "[10M, 50M)"="[10M, +)",  
+                                                           "[50M, 100M)"="[10M, +)",
+                                                           "[100M, 500M)"="[10M, +)",  
+                                                           "[500M, +)"="[10M, +)"))
+table(google_app$Installs_4c)
+
+google_app$Installs_6c <- google_app$Installs
+google_app$Installs_6c <- revalue(google_app$Installs_6c,c("[0, 1K)"="[0, 5K)",
+                                                           "[1K, 5K)"="[0, 5K)",
+                                                           "[5K, 10K)"="[5k, 100k)",
+                                                           "[10K, 50K)"="[5k, 100k)",  
+                                                           "[50K, 100K)"="[5k, 100k)", 
+                                                           "[100K, 500K)"="[100k, 1M)",
+                                                           "[500K, 1M)"="[100k, 1M)",
+                                                           "[1M, 5M)"="[1M, 5M)", 
+                                                           "[5M, 10M)"="[5M, 50M)",
+                                                           "[10M, 50M)"="[5M, 50M)",  
+                                                           "[50M, 100M)"="[50M, +)",
+                                                           "[100M, 500M)"="[50M, +)",  
+                                                           "[500M, +)"="[50M, +)"))
+table(google_app$Installs_6c)
 save(google_app,file="google_app_final.RData")
 
