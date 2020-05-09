@@ -398,5 +398,7 @@ google_app$Installs_6c <- revalue(google_app$Installs_6c,c("[0, 1K)"="[0, 5K)",
                                                            "[100M, 500M)"="[50M, +)",  
                                                            "[500M, +)"="[50M, +)"))
 table(google_app$Installs_6c)
+
+google_app$Type <-  factor(google_app$Type)
 save(google_app,file="google_app_final.RData")
 
