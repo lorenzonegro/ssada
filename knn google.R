@@ -98,10 +98,10 @@ plot(tasso,type="l")
 #provo con solo una var
 str(x)
 
-x=df[,c(14)]  
+x=df[,c(2,4,7)]  
 test <- sample(1:length(y),size=30*length(y)/100) #30% test 70% training
-train_X <- as.matrix(x[-test])
-test_X <- as.matrix(x[test])
+train_X <- x[-test,]
+test_X <- x[test,]
 train_Y <- y[-test]
 test_Y <- y[test]
 
