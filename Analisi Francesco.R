@@ -28,7 +28,8 @@ y.train <-  train[,resp.index]
 y.test <- test[,resp.index]
 
 # Multinomiale con penalizzazione lasso
-fit=glmnet(x.train,y.train,family="multinomial")par(mfrow=c(4,4))
+fit=glmnet(x.train,y.train,family="multinomial")
+par(mfrow=c(4,4))
 plot(fit,xvar="dev")
 cvfit=cv.glmnet(x.train,y.train,family="multinomial",nfolds=4)
 par(mfrow=c(1,1))
@@ -123,3 +124,30 @@ head(importance_matrix,20)
 
 # stampo per avere un'idea 
 xgb.plot.importance(importance_matrix[1:20,])
+
+
+# Modelli a logit comulati con penalizzazione lasso 
+library(ordinalNet)
+cv.ordinal <- ordinalNetCV(x.train, y.train, tuneMethod="cvMisclass")
+summary(cv.ordinal)
+fit <- ordinalNet(x.train, y.train, family="cumulative", link="logit",
+                   parallelTerms=TRUE, nonparallelTerms=FALSE)
+summary(fit)
+fit$coefs
+fit4 <- ordinalNet(x.train, y.train, family="cumulative", link="logit",
+                   parallelTerms=TRUE, nonparallelTerms=FALSE, lambdaVals = 0.008591114)
+coef(fit4)
+pred4 <- predict(fit4,x.test)
+pred42 <- rep(NA, length(y.test))
+for( i  in 1:length(y.test))
+{
+  pred42[i] <- levels(y.test)[which.max(pred4[i,])] 
+}
+
+# matrice di confusione
+t4<- table(pred42, y.test)
+t4
+t4 <- rbind(t4[-3,], t4[3,])
+rownames(t4) <- levels(y.test)
+t4
+1-sum(diag(t4))/sum(t4)
