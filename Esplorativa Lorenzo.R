@@ -85,6 +85,7 @@ grid.arrange(non_varia,varia,
 
 
 
+
 #Content rating
 ggplot(google_app) + geom_bar(aes(x=Content.Rating, fill=Installs), position="dodge")
 
