@@ -117,3 +117,29 @@ for(i in 1:length(k_i))
   tasso[i]=sum(diag(table(knn_pred, test_Y))/sum(table(knn_pred,test_Y)))
 }
 plot(tasso,type="l")
+
+#provo a usare reviews (non rate)
+str(x)
+
+x=df[,c(2,3,4,7)]
+y=df$Installs_4c
+test <- sample(1:length(y),size=30*length(y)/100) #30% test 70% training
+train_X <- x[-test,]
+test_X <- x[test,]
+train_Y <- y[-test]
+test_Y <- y[test]
+
+k_i=c(1,2,3,4,5,10,20,50,100)
+tasso=rep(0,length(k_i))
+for(i in 1:length(k_i))
+{
+  cat(i)
+  knn_pred <- knn(train = train_X, test = test_X, cl = train_Y, k = k_i[i])
+  knn_pred=factor(knn_pred,ordered=T)
+  mean(test_Y != knn_pred)   # misclassification error
+  table(knn_pred, test_Y)
+  tasso[i]=sum(diag(table(knn_pred, test_Y))/sum(table(knn_pred,test_Y)))
+}
+plot(tasso,type="l")
+
+#le variabili relative alle reviws sono quelle più importanti. Non si possono mettere?
