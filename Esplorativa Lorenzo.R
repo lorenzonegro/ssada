@@ -1,5 +1,10 @@
 rm(list=ls())
 load("google_app_final.RData")
+library(ggplot2)
+library(lubridate)
+library(grid)
+library(gridExtra)
+library(scales)
 #Esplorativa
 #Category
 #Generes
