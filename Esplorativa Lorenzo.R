@@ -39,11 +39,26 @@ countInst <- as.data.frame(table(google_app$Installs))
 
 #Reviews
 mu.rev=median(google_app$Reviews)
-ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
-  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
-ggplot(google_app[google_app$Reviews>mu.rev,]) + 
-  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..)), position="dodge")
+poco_rec=ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
+  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
+  ggtitle("Poco recensite")+
+  scale_x_continuous(breaks = c(0,0.15,0.30))+
+  scale_y_discrete(limit = countInst$Var1)+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
+        legend.position = "none")+
+  scale_fill_hue()
 
+molto_rec=ggplot(google_app[google_app$Reviews>mu.rev,]) + 
+  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
+  ggtitle("Molto recensite")+
+  scale_x_continuous(breaks = c(0,0.15,0.30))+
+  scale_y_discrete(limit = countInst$Var1)+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
+        legend.position = "none")+
+  scale_fill_hue()
+
+grid.arrange(poco_rec,molto_rec, ncol=2,
+             bottom = "Frequenze")
 #Reviews confronto con installs
 rev_down <- ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
   geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
