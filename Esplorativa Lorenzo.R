@@ -39,21 +39,22 @@ countInst <- as.data.frame(table(google_app$Installs))
 
 #Reviews
 mu.rev=median(google_app$Reviews)
+mu.rev=1000
 poco_rec=ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
-  ggtitle("Poco recensite")+
+  ggtitle("Poco recensite (<= 1000 recensioni)")+
   scale_x_continuous(breaks = c(0,0.15,0.30))+
   scale_y_discrete(limit = countInst$Var1)+
-  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
+  theme(axis.title = element_blank(), plot.title = element_text(size=9, face="bold"),
         legend.position = "none")+
   scale_fill_hue()
 
 molto_rec=ggplot(google_app[google_app$Reviews>mu.rev,]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
-  ggtitle("Molto recensite")+
+  ggtitle("Molto recensite (>1000 recensioni)")+
   scale_x_continuous(breaks = c(0,0.15,0.30))+
   scale_y_discrete(limit = countInst$Var1)+
-  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
+  theme(axis.title = element_blank(), plot.title = element_text(size=9, face="bold"),
         legend.position = "none")+
   scale_fill_hue()
 
@@ -62,15 +63,16 @@ grid.arrange(poco_rec,molto_rec, ncol=2,
 #Reviews confronto con installs
 rev_down <- ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
   geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
-  geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + ggtitle("Meno recensite")+
+  #geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") 
+  ggtitle("Meno recensite")+
   theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
 
 rev_up <- ggplot(google_app[google_app$Reviews>mu.rev,]) + 
   geom_bar(aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#ff6b30")+
   scale_y_continuous(breaks = c(0,0.15,0.30))+
   scale_x_discrete(limit = countInst$Var1) + ggtitle("Molto recensite")+
-  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))+
-  geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
+  #geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
 
 grid.arrange(rev_down,rev_up, 
              top = "Confronto del numero di installazioni per app molto recensite o meno", 
@@ -84,15 +86,16 @@ ggplot(google_app) + geom_bar(aes(x=varies_with_device, fill=Installs), position
 #devo standardizzare all'interno delle due classi
 non_varia<- ggplot(google_app[google_app$varies_with_device=="No",]) + 
   geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
-  geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + ggtitle("Non varia con device")+
+  #geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") 
+  ggtitle("Non varia con device")+
   theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
 
 varia <- ggplot(google_app[google_app$varies_with_device=="Yes",]) + 
   geom_bar(aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#ff6b30")+
   scale_y_continuous(breaks = c(0,0.15,0.30))+
   scale_x_discrete(limit = countInst$Var1) + ggtitle("Varia con device")+
-  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))+
-  geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
+  #geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
 
 grid.arrange(non_varia,varia, 
              top = "Confronto del numero di installazioni in base al variare o meno per device", 
@@ -102,5 +105,7 @@ grid.arrange(non_varia,varia,
 
 
 #Content rating
-ggplot(google_app) + geom_bar(aes(x=Content.Rating, fill=Installs), position="dodge")
+ggplot(google_app) + geom_bar(aes(x=Content.Rating, fill=Installs), position="dodge")+
+  theme(axis.title = element_blank())+
+scale_fill_hue()
 
