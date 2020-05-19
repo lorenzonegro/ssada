@@ -42,19 +42,19 @@ mu.rev=median(google_app$Reviews)
 mu.rev=1000
 poco_rec=ggplot(google_app[google_app$Reviews<=mu.rev,]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
-  ggtitle("Poco recensite (<= 1000 recensioni)")+
+  ggtitle("<= 1000 Recensioni")+
   scale_x_continuous(breaks = c(0,0.15,0.30))+
   scale_y_discrete(limit = countInst$Var1)+
-  theme(axis.title = element_blank(), plot.title = element_text(size=9, face="bold"),
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
         legend.position = "none")+
   scale_fill_hue()
 
 molto_rec=ggplot(google_app[google_app$Reviews>mu.rev,]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
-  ggtitle("Molto recensite (>1000 recensioni)")+
+  ggtitle(">1000 Recensioni")+
   scale_x_continuous(breaks = c(0,0.15,0.30))+
   scale_y_discrete(limit = countInst$Var1)+
-  theme(axis.title = element_blank(), plot.title = element_text(size=9, face="bold"),
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
         legend.position = "none")+
   scale_fill_hue()
 
@@ -106,6 +106,6 @@ grid.arrange(non_varia,varia,
 
 #Content rating
 ggplot(google_app) + geom_bar(aes(x=Content.Rating, fill=Installs), position="dodge")+
-  theme(axis.title = element_blank())+
-scale_fill_hue()
+  #theme(axis.title = element_blank())+
+  scale_fill_hue()+ylab("Count")+xlab("")
 
