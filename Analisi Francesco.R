@@ -2,7 +2,10 @@
 library(glmnet)
 library(caret)
 library(xgboost)
+library(penalizedLDA)
+setwd("~/GitHub/ssada")
 load("google_app_final.RData")
+
 
 # test
 set.seed(123)
@@ -12,13 +15,24 @@ train.index <- sample(1:nrow(google_app) , size = nrow(google_app)*0.7)
 train <- google_app[train.index,]
 test <- google_app[-train.index,]
 str(train)
+continue <- c("Rating","Size", "Price","reviews.rate")
+train.cont <- train[,continue]
+test.cont <- test[,continue]
+preProcValues <- preProcess(train.cont, method = c("center", "scale"))
+trainTransformed <- predict(preProcValues, train.cont)
+testTransformed <- predict(preProcValues, test.cont)
 
+# metto le standardizzate al posto delle 
 
+train[,continue]<- trainTransformed
+test[,continue] <- testTransformed
+summary(test)
 # divido le variabili tra risposta ed esplicative
 colnames(train)
 espli.index <- c("Category","Rating","Size", "Price", "Content.Rating", "Genres","Android.Ver",
-                 "Last.Updated","Type_Price")
+                 "Last.Updated","reviews.rate")
 resp.index <- "Installs_4c"
+
 # matrici di disegno
 
 dummies <- dummyVars( ~ ., data = train[,espli.index])
@@ -26,6 +40,8 @@ x.train <- predict(dummies,train[,espli.index])
 x.test <- predict(dummies,test[,espli.index])
 y.train <-  train[,resp.index]
 y.test <- test[,resp.index]
+
+
 
 # Multinomiale con penalizzazione lasso
 fit=glmnet(x.train,y.train,family="multinomial")
@@ -40,7 +56,33 @@ t
 t <- rbind(t[-2,], t[2,])
 t
 rownames(t) <- levels(y.test)
-sum(diag(t))/sum(t)
+1-sum(diag(t))/sum(t)
+# falsi positivi e negativi
+sum(t[1:2,3:4])/sum(t[,3:4])
+sum(t[3:4,1:2])/sum(t[,1:2])
+
+# LDA Penalizzata
+y.lda <- as.integer(y.train)
+cv.PLDA <- PenalizedLDA.cv(x.train, y.lda, lambdas =seq(from=0, to =10000,length.out = 10), K = NULL, nfold = 4, folds = NULL)
+
+cv.PLDA$bestlambda
+cv.PLDA$lambdas
+# Best model 
+modelLDA <- PenalizedLDA(x.train, y.lda, K = cv.PLDA$bestK,lambda=cv.PLDA$bestlambda)
+
+plot(cv.PLDA)
+pred=predict(modelLDA,x.test)
+pred$ypred
+unique(pred$ypred)
+str(pred)
+t.lda<- table(pred$ypred, y.test)
+t.lda
+rownames(t.lda) <- levels(y.test)
+1-sum(diag(t.lda))/sum(t.lda)
+
+
+
+
 
 # La variabile reviews rate miglioora la previsione di poco
 # quindi non credo che dia tanto overfitting
@@ -69,14 +111,14 @@ numberOfClasses <- length(unique(label.train))
 xgb_params <- list("objective" = "multi:softprob",
                    "eval_metric" = "mlogloss",
                    "num_class" = numberOfClasses,
-                   "max.depth" = 4,
-                   "eta"= 0.15,
+                   "max.depth" = 3,
+                   "eta"= 0.1,
                    "min_child_weight"=1,
                    "subsample"=1, 
                    "colsample_bytree"=1)
 
 nround    <- 2000 # number of XGBoost rounds
-cv.nfold  <- 4
+cv.nfold  <- 5
 
 # Fit cv.nfold 
 cv_model <- xgb.cv(params = xgb_params,
@@ -110,11 +152,16 @@ for( i  in 1:length(y.test))
 
 # matrice di confusione
 t3<- table(pred3, y.test)
+t3
 t3 <- rbind(t3[-2,], t3[2,])
 rownames(t3) <- levels(y.test)
 t3
 1-sum(diag(t3))/sum(t3)
 
+
+# falsi positivi e negativi
+sum(t3[1:2,3:4])/sum(t3[,3:4])
+sum(t3[3:4,1:2])/sum(t3[,1:2])
 # importanza delle variabili
 # get the feature real names
 names <-  colnames(x.train)
@@ -128,14 +175,26 @@ xgb.plot.importance(importance_matrix[1:20,])
 
 # Modelli a logit comulati con penalizzazione lasso 
 library(ordinalNet)
-cv.ordinal <- ordinalNetCV(x.train, y.train, tuneMethod="cvMisclass")
-summary(cv.ordinal)
+cv.ordinal <- ordinalNetCV(x.train, y.train, tuneMethod="cvMisclass", standardize=F)
+cv.ordinal.2 <- ordinalNetTune(
+  x.train,
+  y.train,
+  lambdaVals = NULL,
+  folds = NULL,
+  nFolds = 3,
+  printProgress = TRUE,
+  warn = TRUE,
+  alpha = 0.5,
+)
+
+cv.ordinal.2$lambdaVals
+summary(cv.ordinal.2)
 fit <- ordinalNet(x.train, y.train, family="cumulative", link="logit",
-                   parallelTerms=TRUE, nonparallelTerms=FALSE)
+                   parallelTerms=TRUE, nonparallelTerms=FALSE, standardize = T)
 summary(fit)
 fit$coefs
 fit4 <- ordinalNet(x.train, y.train, family="cumulative", link="logit",
-                   parallelTerms=TRUE, nonparallelTerms=FALSE, lambdaVals = 0.008591114)
+                   reverse = T,parallelTerms=TRUE, nonparallelTerms=FALSE, lambdaVals = 0.004)
 coef(fit4)
 pred4 <- predict(fit4,x.test)
 pred42 <- rep(NA, length(y.test))
@@ -147,7 +206,32 @@ for( i  in 1:length(y.test))
 # matrice di confusione
 t4<- table(pred42, y.test)
 t4
-t4 <- rbind(t4[-3,], t4[3,])
+t4 <- rbind(t4[-2,], t4[2,])
 rownames(t4) <- levels(y.test)
 t4
 1-sum(diag(t4))/sum(t4)
+# Falsi positivi e (per secondi) falsi negativi
+sum(t4[1:2,3:4])/sum(t4[1:2,])
+sum(t4[3:4,1:2])/sum(t4[,1:2])
+
+# tabella 
+tabClass = function(class,classVer){
+  err=matrix(0, length(levels(classVer)),length(levels(classVer)))
+  colnames(err)=levels(classVer)
+  rownames(err)=levels(classVer)
+  for(i in 1:length(class)){
+    jS = which(levels(classVer)==class[i])
+    jV = which(levels(classVer)==classVer[i])
+    err[jS,jV]=err[jS,jV]+1
+  }
+  falsi.err= 1-diag(err)/apply(err,2,sum)
+  overall.err=1-sum(diag(err))/sum(err)
+  class.err=1-diag(err)/apply(err,1,sum)
+  return(list(errMatrix=err,class.err=class.err,falsi.err=falsi.err,overall.err=overall.err))
+}
+leve
+tabella.comulati  <- tabClass(pred42, y.test)
+tabella.comulati$errMatrix
+tabella.comulati$class.err
+tabella.comulati$falsi.err
+tabella.comulati$overall.err

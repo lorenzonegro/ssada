@@ -328,6 +328,7 @@ for(i in 1:length(gen_lev)){
 }
 
 # scrivo il limite massimo
+set.seed(1)
 max.rev <- c(10^3,5*10^3,10^4,5*10^4,10^5,5*10^5,10^6,5*10^6,10^7,5*10^7,10^8,5*10^8,10^9)
 # calcolo i rate senza penalizzazione
 n.rev <- rep(NA,length(google_app$Reviews))
@@ -337,6 +338,10 @@ install.levels <- levels(google_app$Installs)
 for(i in 1:13)
 {
   n.rev[google_app$Installs==install.levels[i]] <- max.rev[i]
+}
+
+for(i in 1:length(n.rev)){ 
+  n.rev[i]<- sample( round(min(5*(google_app$Reviews[i]+10),n.rev[i]-1)):n.rev[i], size = 1)
 }
 
 # ora devo scrivere la log-verosimiglianza
@@ -353,8 +358,9 @@ stima.a.b <- nlminb(c(1,1), function(x) -logL(x), lower = c(1e-6,1e-6))$par
 # Stima con shrinkage 
 reviews.rate <- (google_app$Reviews+stima.a.b[1])/( n.rev+stima.a.b[1]+stima.a.b[2])
 
+
 # confronto la stima con shrinkage con quella classica 
-par(mfrow = c(2,1))
+par(mfrow = c(1,1))
 boxplot(reviews.rate~google_app$Installs)
 boxplot(google_app$Reviews/n.rev~google_app$Installs)
 # dai boxplot si vede un po' di shrinkage per quelle con pochi download
