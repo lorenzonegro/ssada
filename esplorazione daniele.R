@@ -12,13 +12,17 @@ ggplot(google_app) + geom_bar(aes(y=Installs))
 #### Type_Price #### 
 ggplot(google_app) + geom_bar(aes(x=Type_Price, y=(..count..)/sum(..count..), fill=Installs), position="dodge")
 
-ty_free <- ggplot(google_app[google_app$Type_Price=="Free",]) + 
-  geom_bar( aes(y=Installs, x = (..count..)/sum(..count..), fill=Installs), position="dodge") + 
-  #geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + 
-  ggtitle("Gratis")+
+ty_free <- ggplot(google_app, aes()) + 
+  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..), fill=Installs), position="dodge") + 
+  facet_wrap(google_app$Type, scales = "free_x", labeller = as_labeller(hospital_names))+
   theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
         legend.position = "none")+
   scale_fill_hue()
+
+hospital_names <- c(
+  `Free` = "Gratis",
+  `Paid` = "A pagamento"
+)
 
 ty_paid <- ggplot(google_app[google_app$Type_Price%in% c("Paid","Plus"),]) + 
   geom_bar(aes(y=Installs, x = (..count..)/sum(..count..), fill=Installs), position="dodge")+
@@ -61,10 +65,15 @@ ggplot(google_app) + geom_bar(aes(fill=Installs,x=as.character(year(Last.Updated
 
 
 #### Last update #### 
-ty_2018 <- ggplot(google_app[year(google_app$Last.Updated)>=2018,]) + 
+pippo <- year(google_app$Last.Updated)>=2018
+hospital_names <- c(
+  `No` = "Non varia con device",
+  `Yes` = "Varia con device"
+)
+ty_2018 <- ggplot(google_app) + 
   geom_bar( aes(y=Installs, x = (..count..)/sum(..count..), fill=Installs), position="dodge") + 
   #geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") + 
-  ggtitle("Durante il 2018") +
+  facet_wrap(google_app$varies_with_device, scales = "free_x", labeller = as_labeller(hospital_names))+
   theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
         legend.position = "none")+
   scale_fill_hue()
