@@ -84,24 +84,26 @@ grid.arrange(rev_down,rev_up,
 ggplot(google_app) + geom_bar(aes(x=varies_with_device, fill=Installs), position="dodge")
 
 #devo standardizzare all'interno delle due classi
-non_varia<- ggplot(google_app[google_app$varies_with_device=="No",]) + 
-  geom_bar( aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#00b200") + 
-  #geom_density(aes(x = as.numeric(Installs)),adjust=1.75, col="#004900") 
+varia=ggplot(google_app[google_app$varies_with_device=="Yes",]) + 
+  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
+  ggtitle("Varia con device")+
+  scale_x_continuous(breaks = c(0,0.15,0.30))+
+  scale_y_discrete(limit = countInst$Var1)+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
+        legend.position = "none")+
+  scale_fill_hue()
+
+non_varia=ggplot(google_app[google_app$varies_with_device=="No",]) + 
+  geom_bar(aes(y=Installs, x = (..count..)/sum(..count..),fill=Installs), position="dodge")+
   ggtitle("Non varia con device")+
-  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
+  scale_x_continuous(breaks = c(0,0.15,0.30))+
+  scale_y_discrete(limit = countInst$Var1)+
+  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"),
+        legend.position = "none")+
+  scale_fill_hue()
 
-varia <- ggplot(google_app[google_app$varies_with_device=="Yes",]) + 
-  geom_bar(aes(x=Installs, y = (..count..)/sum(..count..)), position="dodge", fill="#ff6b30")+
-  scale_y_continuous(breaks = c(0,0.15,0.30))+
-  scale_x_discrete(limit = countInst$Var1) + ggtitle("Varia con device")+
-  theme(axis.title = element_blank(), plot.title = element_text(size=11, face="bold"))
-  #geom_density(aes(x = as.numeric(Installs)),adjust=1, col = "#923c1a")
-
-grid.arrange(non_varia,varia, 
-             top = "Confronto del numero di installazioni in base al variare o meno per device", 
-             left = textGrob("Frequenze",rot = 90, vjust = 0.5, hjust = 0.5))
-
-
+grid.arrange(varia, non_varia, ncol=2,
+             bottom = "Frequenze")
 
 
 #Content rating
