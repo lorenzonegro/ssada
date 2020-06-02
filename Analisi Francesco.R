@@ -53,13 +53,15 @@ plot(cvfit)
 pred=predict(cvfit,newx=x.test,type="class")
 t<- table(pred, y.test)
 t
-t <- rbind(t[-2,], t[2,])
+t <- rbind(t[-3,], t[3,])
 t
 rownames(t) <- levels(y.test)
 1-sum(diag(t))/sum(t)
-# falsi positivi e negativi
-sum(t[1:2,3:4])/sum(t[,3:4])
+# falsi positivi
 sum(t[3:4,1:2])/sum(t[,1:2])
+# falsi negativi
+sum(t[1:2,3:4])/sum(t[,3:4])
+rownames(t4) <- levels(y.test)
 
 # LDA Penalizzata
 y.lda <- as.integer(y.train)
@@ -118,7 +120,7 @@ xgb_params <- list("objective" = "multi:softprob",
                    "colsample_bytree"=1)
 
 nround    <- 2000 # number of XGBoost rounds
-cv.nfold  <- 5
+cv.nfold  <- 4
 
 # Fit cv.nfold 
 cv_model <- xgb.cv(params = xgb_params,
@@ -153,11 +155,14 @@ for( i  in 1:length(y.test))
 # matrice di confusione
 t3<- table(pred3, y.test)
 t3
-t3 <- rbind(t3[-2,], t3[2,])
+t3 <- rbind(t3[-3,], t3[3,])
 rownames(t3) <- levels(y.test)
 t3
 1-sum(diag(t3))/sum(t3)
-
+# falsi positivi
+sum(t3[3:4,1:2])/sum(t3[,1:2])
+# falsi negativi
+sum(t3[1:2,3:4])/sum(t3[,3:4])
 
 # falsi positivi e negativi
 sum(t3[1:2,3:4])/sum(t3[,3:4])
@@ -171,7 +176,7 @@ head(importance_matrix,20)
 
 # stampo per avere un'idea 
 xgb.plot.importance(importance_matrix[1:20,])
-
+save(importance_matrix, file = "Importace.RData")
 
 # Modelli a logit comulati con penalizzazione lasso 
 library(ordinalNet)
@@ -196,18 +201,32 @@ fit$coefs
 fit4 <- ordinalNet(x.train, y.train, family="cumulative", link="logit",
                    reverse = T,parallelTerms=TRUE, nonparallelTerms=FALSE, lambdaVals = 0.004)
 coef(fit4)
+# Prendo i più e i meno importanti
+best <- round(sort(coef(fit4)[which(coef(fit4)>=sort(coef(fit4), decreasing = T)[30])],decreasing = T),2)
+wrost <- round(sort(coef(fit4)[which(coef(fit4)<=sort(coef(fit4))[30])]),2)
+save(best, file= "BestCoef.RData")
+save(wrost, file= "WrostCoef.RData")
+best
+
 pred4 <- predict(fit4,x.test)
 pred42 <- rep(NA, length(y.test))
 for( i  in 1:length(y.test))
 {
   pred42[i] <- levels(y.test)[which.max(pred4[i,])] 
 }
-
+summary(x.test)
 # matrice di confusione
 t4<- table(pred42, y.test)
 t4
-t4 <- rbind(t4[-2,], t4[2,])
+t4 <- rbind(t4[-3,], t4[3,])
+# flp e fln
+# falsi positivi
+sum(t4[3:4,1:2])/sum(t4[,1:2])
+# falsi negativi
+sum(t4[1:2,3:4])/sum(t4[,3:4])
 rownames(t4) <- levels(y.test)
+
+
 t4
 1-sum(diag(t4))/sum(t4)
 # Falsi positivi e (per secondi) falsi negativi
